@@ -1,7 +1,7 @@
 package com.autorun.githubproxy.domain.controller;
 
 import com.autorun.githubproxy.domain.model.Branch;
-import com.autorun.githubproxy.domain.model.Repository;
+import com.autorun.githubproxy.domain.model.RepositoryWithBranches;
 import com.autorun.githubproxy.dto.BranchDTO;
 import com.autorun.githubproxy.dto.GitHubProxyResponseDTO;
 import com.autorun.githubproxy.dto.RepositoryDTO;
@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ResponseMapper {
-    public GitHubProxyResponseDTO mapToResponseDto(List<Repository> repositories) {
-
+    public GitHubProxyResponseDTO mapToResponseDto(List<RepositoryWithBranches> repositories) {
         List<RepositoryDTO> repositoryDTOs = repositories.stream()
                 .map(this::toRepositoryDTO)
                 .collect(Collectors.toList());
@@ -22,16 +21,16 @@ public class ResponseMapper {
                 .build();
     }
 
-    private RepositoryDTO toRepositoryDTO(Repository repository) {
+    private RepositoryDTO toRepositoryDTO(RepositoryWithBranches repository) {
         List<BranchDTO> branchDTOs = toBranchDTOs(repository);
         return RepositoryDTO.builder()
-                .name(repository.getName())
-                .owner(repository.getOwner().getLogin())
+                .name(repository.getRepository().getName())
+                .owner(repository.getRepository().getOwner().getLogin())
                 .branches(branchDTOs)
                 .build();
     }
 
-    private List<BranchDTO> toBranchDTOs(Repository repository) {
+    private List<BranchDTO> toBranchDTOs(RepositoryWithBranches repository) {
         return repository.getBranches().stream()
                 .map(this::toBranch)
                 .collect(Collectors.toList());

@@ -16,24 +16,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GithubProxyControllerTest {
 
-    private static final String USER_NAME = "user";
-
     private final GitHubConsumerService gitHubConsumerService = Mockito.mock(GitHubConsumerService.class);
     private final ResponseMapper responseMapper = new ResponseMapper();
     private final TestObjectFactory testObjectFactory = new TestObjectFactory();
     private final GithubProxyController githubProxyController = new GithubProxyController(gitHubConsumerService,responseMapper);
 
-
     @Test
     void shouldReturnRepositories() throws JsonProcessingException {
-        Mockito.when(gitHubConsumerService.getNotForkRepositoriesByUserName(USER_NAME)).thenReturn(testObjectFactory.createRepositories());
+        Mockito.when(gitHubConsumerService.getNotForkRepositoriesByUserName(USER_NAME)).thenReturn(testObjectFactory.createRepositoriesWithBranches());
         ResponseEntity<GitHubProxyResponseDTO> response = githubProxyController.getRepositoryNameByUsername(USER_NAME);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().getRepositories().size());
         RepositoryDTO repositoryDTO = response.getBody().getRepositories().iterator().next();
         assertEquals(REPOSITORY_NAME, repositoryDTO.getName());
-        assertEquals(LOGIN, repositoryDTO.getOwner());
+        assertEquals(USER_NAME, repositoryDTO.getOwner());
         assertEquals(1, repositoryDTO.getBranches().size());
         BranchDTO branchDTO = repositoryDTO.getBranches().iterator().next();
         assertEquals(BRANCH_NAME, branchDTO.getName());

@@ -1,8 +1,8 @@
 package com.autorun.githubproxy.domain.controller;
 
 
+import com.autorun.githubproxy.domain.model.RepositoryWithBranches;
 import com.autorun.githubproxy.domain.service.GitHubConsumerService;
-import com.autorun.githubproxy.domain.model.Repository;
 import com.autorun.githubproxy.dto.GitHubProxyResponseDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,8 +23,8 @@ public class GithubProxyController {
 
     static final String RESOURCE_PATH = "/github/proxy";
 
-    private final GitHubConsumerService gitHubConsumerService;
-    private final ResponseMapper responseMapper;
+    private GitHubConsumerService gitHubConsumerService;
+    private ResponseMapper responseMapper;
 
     @Autowired
     public GithubProxyController(GitHubConsumerService gitHubConsumerService, ResponseMapper responseMapper) {
@@ -40,7 +40,7 @@ public class GithubProxyController {
             @ApiResponse(responseCode = "404", description = "User not found.", content = @Content),
             @ApiResponse(responseCode = "406", description = "Wrong content type.", content = @Content)})
     ResponseEntity<GitHubProxyResponseDTO> getRepositoryNameByUsername(@PathVariable String username) throws JsonProcessingException {
-        List<Repository> repositories = gitHubConsumerService.getNotForkRepositoriesByUserName(username);
+        List<RepositoryWithBranches> repositories = gitHubConsumerService.getNotForkRepositoriesByUserName(username);
         GitHubProxyResponseDTO responseDTO = responseMapper.mapToResponseDto(repositories);
         return ResponseEntity.ok(responseDTO);
     }

@@ -2,12 +2,10 @@ package com.autorun.githubproxy.domain.service;
 
 import com.autorun.githubproxy.domain.model.Branch;
 import com.autorun.githubproxy.domain.model.Repository;
+import com.autorun.githubproxy.domain.model.RepositoryWithBranches;
 import com.autorun.githubproxy.domain.rest.client.GithubClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,29 +14,18 @@ import java.util.stream.Collectors;
 @Service
 public class GitHubConsumerService {
 
-    private ObjectMapper objectMapper;
     private GithubClient githubClient;
 
+    @Autowired
     public GitHubConsumerService(GithubClient githubClient) {
         this.githubClient = githubClient;
-        this.objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public List<Repository> getNotForkRepositoriesByUserName(String username) throws JsonProcessingException {
-        ResponseEntity<String> response = githubClient.findAllRepositoriesByUserName(username);
-        List<Repository> repositories = readDataFromRepositoriesResponse(response);
-        List<Repository> notForkRepositories = findNotForkRepositories(repositories);
-        addBranchesInformationToRepositories(notForkRepositories);
-        return notForkRepositories;
-    }
-
-
-    private List<Repository> readDataFromRepositoriesResponse(ResponseEntity<String> response) throws JsonProcessingException {
-        if (Objects.nonNull(response) && response.getStatusCode().value() == 200) {
-            String jsonInput = response.getBody();
-            return objectMapper.readValue(jsonInput, new TypeReference<List<Repository>>() {
-            });
+    public List<RepositoryWithBranches> getNotForkRepositoriesByUserName(String username) throws JsonProcessingException {
+        List<Repository> repositories = githubClient.findAllRepositoriesByUserName(username);
+        if(!repositories.isEmpty()) {
+            List<Repository> notForkRepositories = findNotForkRepositories(repositories);
+            return createRepositoriesWithBranches(notForkRepositories);
         }
         return Collections.emptyList();
     }
@@ -48,29 +35,22 @@ public class GitHubConsumerService {
                 .collect(Collectors.toList());
     }
 
-    private void addBranchesInformationToRepositories(List<Repository> repositories) {
-        repositories.parallelStream()
-                .forEach(x -> {
+    private List<RepositoryWithBranches> createRepositoriesWithBranches(List<Repository> repositories) {
+        return repositories.parallelStream()
+                .map(x -> {
                     try {
-                        addBranchesInformationToRepository(x);
+                        return addBranchesInformationToRepository(x);
                     } catch (JsonProcessingException e) {
                         throw new IllegalStateException(e);
                     }
-                });
+                }).collect(Collectors.toList());
     }
 
-    private void addBranchesInformationToRepository(Repository repository) throws JsonProcessingException {
-        ResponseEntity<String> response = githubClient.findAllBranchesForRepository(repository);
-        List<Branch> branches = readDataFromBranchesResponse(response);
-        repository.setBranches(branches);
-    }
-
-    private List<Branch> readDataFromBranchesResponse(ResponseEntity<String> response) throws JsonProcessingException {
-        if (Objects.nonNull(response) && response.getStatusCode().value() == 200) {
-            String jsonInput = response.getBody();
-            return objectMapper.readValue(jsonInput, new TypeReference<List<Branch>>() {
-            });
-        }
-        return Collections.emptyList();
+    private RepositoryWithBranches addBranchesInformationToRepository(Repository repository) throws JsonProcessingException {
+        List<Branch> branches = githubClient.findAllBranchesForRepository(repository);
+        return RepositoryWithBranches.builder()
+                .repository(repository)
+                .branches(branches)
+                .build();
     }
 }
