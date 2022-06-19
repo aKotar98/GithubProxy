@@ -1,112 +1,12 @@
 {
   "repositories": [
     {
-      "name": "GithubProxy",
+      "name": "EkoGra",
       "owner": "aKotar98",
       "branches": [
         {
           "name": "master",
-          "commitSha": "f17044909e477bded8af74b790c43c788855018b"
-        }
-      ]
-    },
-    {
-      "name": "Java---kalkulator",
-      "owner": "aKotar98",
-      "branches": [
-        {
-          "name": "master",
-          "commitSha": "2d4be65973ce487d79efcdbb48f107da0b869f0a"
-        }
-      ]
-    },
-    {
-      "name": "java---przyciski",
-      "owner": "aKotar98",
-      "branches": [
-        {
-          "name": "master",
-          "commitSha": "3eb64defc6567776df056707b838ef72d2b846e6"
-        }
-      ]
-    },
-    {
-      "name": "Java-klasy",
-      "owner": "aKotar98",
-      "branches": [
-        {
-          "name": "master",
-          "commitSha": "92bf13da03d0f40ef1c5b88c73f620c31359da83"
-        }
-      ]
-    },
-    {
-      "name": "java-macierze",
-      "owner": "aKotar98",
-      "branches": [
-        {
-          "name": "master",
-          "commitSha": "5998cbff90f62851bda001b2231dff0502bb7d73"
-        }
-      ]
-    },
-    {
-      "name": "java-we_wy",
-      "owner": "aKotar98",
-      "branches": [
-        {
-          "name": "master",
-          "commitSha": "54dbb55d70a2f91f8ddc854153a31430312ff621"
-        }
-      ]
-    },
-    {
-      "name": "JavaAnimacja-Watek",
-      "owner": "aKotar98",
-      "branches": [
-        {
-          "name": "master",
-          "commitSha": "8355fe6e9bf0847e155173c5021966d5c5444287"
-        }
-      ]
-    },
-    {
-      "name": "JavaTabele",
-      "owner": "aKotar98",
-      "branches": [
-        {
-          "name": "master",
-          "commitSha": "8cc73afb9ea4a9fbdf1fd9394b735635d324323f"
-        }
-      ]
-    },
-    {
-      "name": "JavaTabelemini",
-      "owner": "aKotar98",
-      "branches": [
-        {
-          "name": "master",
-          "commitSha": "824bd014b62534631e17fc5441a4a546af254068"
-        }
-      ]
-    },
-    {
-      "name": "Quiz-Ziuq",
-      "owner": "aKotar98",
-      "branches": [
-        {
-          "name": "master",
-          "commitSha": "09b75ba8e59ea0cc3eca197ff250ecac6a25eb23"
-        }
-      ]
-    },
-    {
-      "name": "Wypozyczalnia",
-      "owner": "aKotar98",
-      "branches": [
-        {
-          "name": "master",
-          "commitSha": "5093166188838b1617fea52de710df0759c68bb4"
+          "commitSha": "0e269794eb7d11d6f492e3eecefc0fc8173aee5a"
         }
       ]
     }
