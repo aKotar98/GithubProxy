@@ -1,7 +1,10 @@
 package com.autorun.githubproxy.integrationtests;
 
+import com.autorun.githubproxy.FileReader;
 import com.autorun.githubproxy.GithubProxyApplication;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -9,16 +12,20 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = GithubProxyApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class GithubProxyControllerIntegrationTests {
+class GithubProxyControllerIntegrationTests {
 
     private static final String SERVER_URL = "http://localhost:";
-    private static final String PATH = "//github/proxy/repository/";
-    private static final String NOT_EXISTING_USER = "dsfdsdfsfsfeesesef";
-    private static final String EXISTING_USER = "aKotar98";
+    private static final String CONTROLLER_PATH = "//github/proxy/repository/";
+    private static final String NOT_EXISTING_USER_NAME = "dsfdsdfsfsfeesesef";
+    private static final String EXISTING_USER_NAME = "aKotar98";
+    private static final String OK_RESPONSE_NAME = "okResponse.json";
+    private static final String NOT_FOUND_RESPONSE_NAME = "notFoundResponse.json";
 
     @LocalServerPort
     private int port;
@@ -27,20 +34,25 @@ public class GithubProxyControllerIntegrationTests {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void shouldFindRepositoriesForUser() {
+    void shouldFindRepositoriesForUser() throws IOException, JSONException {
+        //TODO stub request with wiremock to not dependent of external api
         ResponseEntity<String> responseEntity = this.restTemplate
-                .getForEntity(SERVER_URL + port + PATH + EXISTING_USER, String.class);
+                .getForEntity(SERVER_URL + port + CONTROLLER_PATH + EXISTING_USER_NAME, String.class);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        //TODO JSON body compare
+        String expectedResponse = FileReader.readResponseFromFile(OK_RESPONSE_NAME);
+        JSONAssert.assertEquals(expectedResponse, responseEntity.getBody(), true);
     }
 
     @Test
-    public void shouldNotFindUser() {
+    void shouldNotFindUser() throws IOException, JSONException {
+        //TODO stub request with wiremock to not dependent of external api
         ResponseEntity<String> responseEntity = this.restTemplate
-                .getForEntity(SERVER_URL + port + PATH + NOT_EXISTING_USER, String.class);
+                .getForEntity(SERVER_URL + port + CONTROLLER_PATH + NOT_EXISTING_USER_NAME, String.class);
 
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        //TODO JSON body compare
+        String expectedResponse = FileReader.readResponseFromFile(NOT_FOUND_RESPONSE_NAME);
+        JSONAssert.assertEquals(expectedResponse, responseEntity.getBody(), true);
     }
+
 }
